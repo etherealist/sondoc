@@ -167,11 +167,15 @@ def bind(
 ) -> None:
     md_inputs: List[str] = []
     output_path = output.absolute()
-    os.chdir(input)
-    for root, _, files in os.walk(".", followlinks=follow):
-        for file_ in files:
-            if file_.endswith(".md"):
-                md_inputs.append(os.path.join(root, file_))
+    if input.is_file():
+        os.chdir(input.parent)
+        md_inputs.append(input)
+    else:
+        os.chdir(input)
+        for root, _, files in os.walk(".", followlinks=follow):
+            for file_ in files:
+                if file_.endswith(".md"):
+                    md_inputs.append(os.path.join(root, file_))
 
     with temp_css() as temp:
         run(
